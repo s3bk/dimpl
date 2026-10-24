@@ -3,7 +3,7 @@
 //! This module provides helpers to generate self-signed certificates suitable for DTLS,
 //! compute fingerprints, and format them for display.
 
-use aws_lc_rs::digest;
+use sha2::{Digest, Sha256};
 use rand::random;
 use rcgen::{CertificateParams, DistinguishedName, DnType, IsCa, KeyPair, PKCS_ECDSA_P256_SHA256};
 use std::fmt;
@@ -89,7 +89,7 @@ pub fn generate_self_signed_certificate() -> Result<DtlsCertificate, Certificate
 /// This function requires the `rcgen` feature to be enabled.
 pub fn calculate_fingerprint(cert_der: &[u8]) -> Vec<u8> {
     // Use SHA-256 to calculate the fingerprint
-    digest::digest(&digest::SHA256, cert_der).as_ref().to_vec()
+    Sha256::digest(cert_der).to_vec()
 }
 
 /// Format a fingerprint as a colon-separated hex string

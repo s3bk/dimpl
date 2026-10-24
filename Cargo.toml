@@ -32,11 +32,10 @@ rust-crypto = [
 _crypto-common = ["dep:der", "dep:pkcs8", "dep:sec1", "dep:signature", "dep:spki", "dep:x509-cert"]
 
 # Self-signed certificate generation.
-# rcgen can either use ring or aws-lc-rs. We have decided to use aws-lc-rs to limit the number
-# of crypto libraries we depend upon. If you enable rcgen, you are implicitly also compiling aws-lc-rs.
-# The self-signed certificate comes with a sha256 fingerprint that, where we use aws-lc-rs to compute it.
-# Since we are compiling aws-lc-rs anyway, enabling the feature is no extra cost.
-rcgen = ["dep:rcgen", "aws-lc-rs"]
+# rcgen can either use ring or aws-lc-rs. This fork uses ring, and sha2 for the
+# certificate fingerprint, so enabling rcgen does not pull in aws-lc-rs alongside
+# the ring that rustls already needs.
+rcgen = ["dep:rcgen", "dep:sha2"]
 
 [dependencies]
 log = "0.4.29"
@@ -74,7 +73,7 @@ aes = { version = "0.8", optional = true }
 x25519-dalek = { version = "2", optional = true, features = ["static_secrets"] }
 
 # certificate generation
-rcgen = { version = "0.14.7", default-features = false, features = ["aws_lc_rs"], optional = true }
+rcgen = { version = "0.14.7", default-features = false, features = ["ring"], optional = true }
 
 [dev-dependencies]
 openssl = { version = "0.10.75", features = ["vendored"] }
